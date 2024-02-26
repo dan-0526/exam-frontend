@@ -18,8 +18,20 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "types": [
+      // "node", 
+      // "webpack-env"
+    ],
+    "paths": {
+      "vuex": ["./node_modules/vuex/types/vuex.d.ts"],
+      "@/*": ["src/*"]
+    },
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "exclude": [
+    "node_modules"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
