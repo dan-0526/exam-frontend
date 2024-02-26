@@ -1,5 +1,5 @@
 <template>
-    <div class="user">
-      <h1>This is an UserInfo page</h1>
+    <div class="question-bank-page">
+      <h1>This is an question-bank page</h1>
     </div>
   </template>

@@ -1,12 +1,24 @@
-<script setup lang="ts">
+<template>
+      <div id="root">
+        <ComLayout />
+    </div>
+
+</template>
+<script lang="ts">
+import { defineComponent } from 'vue';
+import ComLayout from './components/ComLayout.vue';
+
+export default defineComponent({
+    name: 'layout',
+    components: {
+        ComLayout,
+    },
+});
 </script>
 
-<template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/user">User</router-link>
-  </nav>
-  <router-view/>
-</template>
-
-
+<style scoped>
+#root{
+  width: 100vw;
+  height: 100vh;
+}
+</style>

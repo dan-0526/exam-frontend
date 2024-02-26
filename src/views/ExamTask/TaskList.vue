@@ -1,5 +1,5 @@
 <template>
-    <div class="user">
-      <h1>This is an UserInfo page</h1>
+    <div class="task-list">
+      <h1>This is an task-list page</h1>
     </div>
   </template>

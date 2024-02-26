@@ -3,7 +3,12 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
-        name: '首页',
+        name: '登陆',
+        component: () => import('../views/Login.vue')
+    },
+    {
+        path: '/home',
+        name: '主页',
         component: () => import('../views/Home.vue')
     },
     {
@@ -24,12 +29,12 @@ const routes: Array<RouteRecordRaw> = [
         name: '考试任务',
         children: [
             {
-                path: 'taskList',
+                path: '/taskList',
                 name: '任务列表',
                 component: () => import('../views/ExamTask/TaskList.vue')
             },
             {
-                path: 'myTask',
+                path: '/myTask',
                 name: '我的任务',
                 component: () => import('../views/ExamTask/MyTask.vue')
             }
@@ -56,7 +61,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../views/PaperManagement/index.vue')
     },
     {
-        path: '/personal',
+        path: '/personalManagement',
         name: '人员管理',
         component: () => import('../views/PersonalManagement/index.vue')
     },
