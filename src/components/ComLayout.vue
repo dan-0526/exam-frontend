@@ -113,7 +113,6 @@ watch(
   },
 );
 const handleMenu: MenuProps['onClick'] = e => {
-  console.log('click', e);
   router.push({ path: `/${e.key}` })
 };
 </script>
