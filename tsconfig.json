@@ -28,6 +28,10 @@
       "vuex": ["./node_modules/vuex/types/vuex.d.ts"],
       "@/*": ["src/*"]
     },
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/typings"
+    ]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
   "exclude": [
