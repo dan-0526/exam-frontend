@@ -3,6 +3,7 @@ import './styles/style.css'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import '../public/config'
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/reset.css';
 

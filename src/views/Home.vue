@@ -1,41 +1,84 @@
 <template>
-    <div>
-        <a href="https://vitejs.dev" target="_blank">
-            <img src="/vite.svg" class="logo" alt="Vite logo" />
-        </a>
-        <a href="https://vuejs.org/" target="_blank">
-            <img src="../assets/vue.svg" class="logo vue" alt="Vue logo" />
-        </a>
-    </div>
     <div class="home">
-        <HelloWorld msg="Vite + Vue" />
+        <h1 class="title">
+            <a href="#" target="_blank">在线考试系统</a>
+        </h1>
+    <a-typography style="text-align: left;">
+        <a-typography-title>系统描述</a-typography-title>
+        <a-typography-paragraph>在线考试系统是一个多角色在线考试系统，系统集成了用户管理、角色管理、题库管理、试题管理、考试管理、在线考试等功能，考试流程完善。实现一整套完整体系的在线考试系统，方便用
+            户在此系统中进行练习并不断提升自己，在考试中不断进步。</a-typography-paragraph>
+        <a-typography-title :level="2">主要功能</a-typography-title>
+        <a-typography-title :level="4">1.权限控制</a-typography-title>
+
+        <a-typography-paragraph>本系统存在三个不同的角色，老师，管理员，学生三种用户，此系统是基于vue+springboot实现的前后端分离，用户权限校验通过JWT生成token令牌发放到用户，并根据令牌对用户的身份合法性进行校验。
+        </a-typography-paragraph>
+
+        <a-typography-title :level="4">2. 用户管理</a-typography-title :level="4">
+        <a-typography-paragraph>超级管理员可以对注册本系统用户的进行授权，并拥有操作一切用户的权限。</a-typography-paragraph>
+
+        <a-typography-title :level="4">3.题库模块</a-typography-title :level="4">
+        <a-typography-paragraph>学生用户在题库模块中可以进行题目的功能训练，训练模式分为，顺序练习，随机练习，也可以根据题型练习（单选，多选，判断）。用户答题时会实时判断正确与否，并有错题解析功能。</a-typography-paragraph>
+
+        <a-typography-title :level="4">4.题库管理</a-typography-title :level="4">
+        <a-typography-paragraph>超级管理员和老师可以对本在线考试系统已有的题库进行管理，实现对题库信息的CRUD操作</a-typography-paragraph>
+
+        <a-typography-title :level="4">5.试题管理</a-typography-title :level="4">
+        <a-typography-paragraph>老师和系统管理员用户有权限对本系统的所有试题进行操作，本系统试题支持复杂类型的题目，考试题目支持多插图，选项答案支持单插图功能。</a-typography-paragraph>
+
+        <a-typography-title :level="4">6.考试管理</a-typography-title :level="4">
+        <a-typography-paragraph>
+            老师和系统管理员用户有权限对系统存在的考试进行操作，本系统考试支持公开考试和密码口令考试，并可以对考试进行禁用也可以在设置考试时间段，对于考试可以进行很便利的进行组卷，系统内置两种组卷模式，题库组卷和自由选题组卷。
+        </a-typography-paragraph>
+
+        <a-typography-title :level="4">7.在线考试</a-typography-title :level="4">
+        <a-typography-paragraph>学生用户在注册登录之后，可以在本系统进行在线的考试，考试可由老师和管理员进行布置并设置考试权限（公开，密码），考试题型分为
+            单选、多选、判断、简答题，并支持题目附带配图。考试过程中需开启摄像头进行考试，系统会自动抓拍考生实时考试状态。</a-typography-paragraph>
+
+        <a-typography-title :level="4">8.考卷批阅</a-typography-title :level="4">
+        <a-typography-paragraph>对于本系统中存在的复杂考试的题目，可以由对应的老师进行批阅，此系统的逻辑题无需老师用户进行批阅，老师的工作仅仅是批阅简答题这种无准确答案类型的题目，极大地减轻了老师用户的工作量</a-typography-paragraph>
+
+        <a-typography-title :level="4">9.成绩模块</a-typography-title :level="4">
+        <a-typography-paragraph>
+            参加考试后的学生用户，在提交试卷后进入考试结果页面，页面会自动核对学生用户的逻辑题的对错，对于简答题需要老师或者超级管理员进行批阅。对于学生用户参与的考试，学生用户可以查看到考试的详情并可以查看到自己所错的逻辑题。
+        </a-typography-paragraph>
+        <a-typography-title :level="4">10.考试统计</a-typography-title :level="4">
+        <a-typography-paragraph>本系统针对每一次考试进行数据统计和报表，让使用本系统的老师用户能够直观的了解到每一次考试人员的进步。</a-typography-paragraph>
+    </a-typography>
     </div>
+
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import HelloWorld from '../components/HelloWorld.vue'; // @ is an alias to /src
 
 export default defineComponent({
     name: 'HomeView',
     components: {
-        HelloWorld,
     },
 });
 </script>
-<style scoped>
-.logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
+<style>
+.home {
+    animation: leftMoveIn .7s ease-in;
+    padding: 16px 24px;
 }
 
-.logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
+@keyframes leftMoveIn {
+    0% {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0%);
+        opacity: 1;
+    }
 }
 
-.logo.vue:hover {
-    filter: drop-shadow(0 0 2em #42b883aa);
+.title a {
+    text-decoration: none;
+}
+div.ant-typography {
+    text-indent: 2em;
 }
 </style>
