@@ -177,6 +177,7 @@ onMounted(() => {
   getMenu();
 })
 const handleMenu: MenuProps['onClick'] = e => {
+  console.log(e.key);
   router.push({ path: `/${e.key}` })
 };
 </script>

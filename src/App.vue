@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import ComLayout from './components/ComLayout.vue';
 import Login from './views/Login.vue';
 import Register from './views/Register.vue';
@@ -18,13 +18,18 @@ const route = useRoute();
 const store = useStore();
 
 const hasAuth = ref(false);
-
+console.log(hasAuth)
 watch(() => route.path, (_newVal, _oldVal) => {
-  console.log(route.path, _newVal, _oldVal);
-  const token = store.state.token;
-    if ((token ?? '')?.length > 0) {
-      hasAuth.value = true;
-    }
+  console.log("app.vue——————", route.path, _newVal, _oldVal);
+  const token = store.state.token ?? localStorage.getItem('authorization');
+  console.log(store.state.token, localStorage.getItem('authorization'));
+
+  hasAuth.value = (token ?? '')?.length > 0;
+})
+onMounted(() => {
+  const token = store.state.token ?? localStorage.getItem('authorization');
+  console.log(store.state.token, localStorage.getItem('authorization'));
+  hasAuth.value = (token ?? '')?.length > 0;
 })
 </script>
 

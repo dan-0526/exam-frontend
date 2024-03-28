@@ -63,7 +63,7 @@ interface FormState {
   password: string;
   code: string;
 }
-
+console.log("login")
 const store = useStore();
 const validateCode = async (_rule: any, value: { toString: () => string; }) => {
         //验证码不区分大小写
