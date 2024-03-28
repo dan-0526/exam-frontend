@@ -3,6 +3,11 @@ import store from '../store';
 
 const routes: Array<RouteRecordRaw> = [
     {
+        path: '/',
+        name: '登陆',
+        component: () => import('../views/Login.vue'),
+    },
+    {
         path: '/login',
         name: '登陆',
         component: () => import('../views/Login.vue'),
@@ -33,12 +38,12 @@ const routes: Array<RouteRecordRaw> = [
             {
                 path: '/userList',
                 name: '用户列表',
-                component: () => import('../views/ExamTask/TaskList.vue'),
+                component: () => import('../views/PersonalManagement/UserList.vue'),
             },
             {
                 path: '/systemRole',
                 name: '系统角色',
-                component: () => import('../views/ExamTask/MyTask.vue'),
+                component: () => import('../views/PersonalManagement/SystemRole.vue'),
             }
         ],
     },
@@ -49,12 +54,12 @@ const routes: Array<RouteRecordRaw> = [
             {
                 path: '/subjects',
                 name: '考试科目',
-                component: () => import('../views/QuestionBank/index.vue'),
+                component: () => import('../views/QuestionManagement/Subjects.vue'),
             },
             {
                 path: '/questionBank',
                 name: '考试题库',
-                component: () => import('../views/QuestionBank/index.vue'),
+                component: () => import('../views/QuestionManagement/QuestionBank.vue'),
             }
         ],
     },
@@ -65,7 +70,7 @@ const routes: Array<RouteRecordRaw> = [
             {
                 path: '/examPaper',
                 name: '考试试卷',
-                component: () => import('../views/PaperManagement/index.vue'),
+                component: () => import('../views/PaperManagement/UserList.vue'),
             },
             {
                 path: '/marking',
@@ -86,7 +91,7 @@ const routes: Array<RouteRecordRaw> = [
             {
                 path: '/examList',
                 name: '考试列表',
-                component: () => import('../views/PaperManagement/index.vue'),
+                component: () => import('../views/PaperManagement/UserList.vue'),
             },
             {
                 path: '/myGrade',
@@ -141,12 +146,12 @@ router.beforeEach((to, from, next) => {
         menuList = JSON.parse(storedMenuList);
     }
     console.log(token, store.state.token, menuList, !token)
-    if (to.path === '/login' || to.path === '/register') {
+    if (to.path === '/' || to.path === '/register') {
         return next()
-    } else if (!token && to.path !== '/login' && to.path !== '/register') {
+    } else if (!token && to.path !== '/login' && to.path !== '/register' && to.path !== '/') {
         // 检查是否存在token，且即将跳转到的不是/login，则跳转到/login
         console.log('没有token');
-        next('/login');
+        next('/');
     }
     // else if (token && !menuList.includes(to.path)) {
     //     const taskMenu = ["/myQuestionBank", "/myQuestionBank",]
