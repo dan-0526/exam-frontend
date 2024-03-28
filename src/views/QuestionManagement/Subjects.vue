@@ -145,7 +145,9 @@ const {
 
 const dataSource = computed(() => data?.value?.data || [])
 const pagination = computed(() => ({
-    total: (data as unknown as [])?.length,
+    showTotal: (total: any) => `共${total}条数据`,
+  total: (data as unknown as [])?.length,
+  showSizeChanger: true,
     current: current.value,
     pageSize: pageSize.value,
     pageSizeOptions: [
@@ -175,7 +177,7 @@ const onSelectChange = (val: never[]) => {
 }
 const handleDelete = () => {
     Modal.confirm({
-        title: '是否确认删除该题库?',
+        title: '删除题库',
         icon: createVNode(ExclamationCircleOutlined),
         content: '此操作将永久删除该题库, 是否继续？',
         okText: '确认',

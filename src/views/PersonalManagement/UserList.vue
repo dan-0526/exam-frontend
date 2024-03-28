@@ -3,8 +3,9 @@
 
     <a-row style="margin-top: 16px;">
       <a-space>
-      <a-input v-model="state.queryInfo.loginName" @blur="getList" placeholder="搜索用户名" ></a-input>
-      <a-input v-model="state.queryInfo.realname" @blur="getList" placeholder="搜索姓名"></a-input>
+      <a-input v-model="state.queryInfo.loginName" placeholder="搜索用户名" ></a-input>
+      <a-input v-model="state.queryInfo.realname" placeholder="搜索姓名"></a-input>
+      <a-button :icon="h(SearchOutlined)" @click="getList" type="primary" />
     </a-space>
     </a-row>
     <a-row style="margin: 16px 0;">
@@ -98,12 +99,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, toRaw } from 'vue';
+import { ref, reactive, computed, toRaw, h } from 'vue';
 import request from '../../service/request';
 import API from '../../api/api'
 import { TableProps, message } from 'ant-design-vue';
 import { usePagination } from 'vue-request';
 import { Res } from '../../api/type';
+import { SearchOutlined } from '@ant-design/icons-vue';
 type APIParams = {
     loginName?: string,
     realname?: string,
@@ -272,7 +274,9 @@ const {
 
 const dataSource = computed(() => data?.value?.data || [])
 const pagination = computed(() => ({
+  showTotal: (total: any) => `共${total}条数据`,
   total: (data as unknown as [])?.length,
+  showSizeChanger: true,
   current: current.value,
   pageSize: pageSize.value,
   pageSizeOptions: [
