@@ -28,6 +28,8 @@ let API = {
     handleUser:  baseUrl + '/admin/handleUser',
     //管理员新增用户
     addUser:  baseUrl + '/admin/addUser',
+    updateUser:  baseUrl + '/admin/updateUser',
+
     //获取角色信息
     getRoleInfo:  baseUrl + '/admin/getRole',
 

@@ -1,4 +1,10 @@
-import axios, {AxiosRequestConfig} from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
+import store from '../store';
+
+const getToken = () => {
+    const token = store.getters.token ?? localStorage.getItem('authorization') ?? "";
+    return token;
+};
 // request.js
 // 创建新的axios实例
 const service = axios.create({
@@ -7,14 +13,25 @@ const service = axios.create({
     // baseURL: process.env.NODE_ENV === "development" ? window.EXAM_CONFIG.BASEURL : window.EXAM_CONFIG.BASEURL,
     // 超时时间暂定5s
     timeout: 5000,
+    headers: {
+        'Content-Type': 'application/json',
+      },
 });
 // request.js
+// 请求拦截器，添加token到headers
+service.interceptors.request.use((config: AxiosRequestConfig) => {
+    const token = getToken();
+    if (token) {
+        config.headers.Authorization = token;
+    }
+    return config;
+}, error => Promise.reject(error));
 // request.js
 service.interceptors.response.use(
-    (    response: any) => {
+    (response: any) => {
         return response;
     },
-    (    error: { response: { status: any; }; message: string; }) => {
+    (error: { response: { status: any; }; message: string; }) => {
         // 处理异常情况，根据项目实际情况处理或不处理
         if (error && error.response) {
             // 根据约定的响应码处理
@@ -36,38 +53,29 @@ service.interceptors.response.use(
     }
 );
 // request.js
-const Request = (url: AxiosRequestConfig, options: any = {}) => {
-    let method = options.method || 'get';
-    let params = options.params || {};
+const Request = async (method: AxiosRequestConfig['method'], url: string, data?: any, customConfig?: AxiosRequestConfig) => {
+    let apiUrl = url;
+    if (method === 'GET' && data) {
+        console.log(data);
+        const querystring = new URLSearchParams(data);
+        apiUrl = `${url}?${querystring.toString()}`;
+    }
+    const finalConfig: AxiosRequestConfig = {
+        method,
+        url: apiUrl,
+        ...(method !== 'GET' && { data }), // 对于非GET请求，才将data放入配置
+        headers: {
+            'Content-Type': 'application/json',
+            ...customConfig?.headers, // 合并自定义headers
+          },
+          ...(customConfig || {}), // 合并其他自定义配置项
+    };
 
-    if (method === 'get' || method === 'GET') {
-        return new Promise((resolve, reject) => {
-            service
-                .get(url, {
-                    params: params,
-                })
-                .then((res: { data: unknown; }) => {
-                    if (res && res.data) {
-                        resolve(res.data);
-                    }
-                })
-                .catch((err: any) => {
-                    reject(err);
-                });
-        });
-    } else {
-        return new Promise((resolve, reject) => {
-            service
-                .post(url, params)
-                .then((res: { data: unknown; }) => {
-                    if (res && res.data) {
-                        resolve(res.data);
-                    }
-                })
-                .catch((err: any) => {
-                    reject(err);
-                });
-        });
+    try {
+        const response = await service(finalConfig);
+        return response.data;
+    } catch (err) {
+        throw err.response || err;
     }
 };
 // request.js
