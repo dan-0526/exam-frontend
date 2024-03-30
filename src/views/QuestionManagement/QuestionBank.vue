@@ -35,8 +35,10 @@
         <template v-if="column.key === 'quType'">
           <span>{{ questionTypeArr[record.quType] }}</span>
         </template>
-        <template v-if="column.key === 'level'">
-          <span>{{ levelArr[record.level] }}</span>
+        <template v-else-if="column.key === 'level'">
+          <a-tag :color="record.level === 1 ? 'green' : record.level === 2 ? 'orange' : 'red'">
+              {{ levelArr[record.level] }}
+            </a-tag>
         </template>
       </template>
     </a-table>
@@ -84,7 +86,7 @@
 
         <!--存放答案表单的信息-->
         <a-form-item prop="answer" v-if="addForm.questionType !== 4" :wrapper-col="{ span: 23, offset: 1 }">
-          <a-table :row-key="(record: any) => record.id" :data-source="addForm.answer" :columns="answerColumns">
+          <a-table :row-key="(record: any) => record.id" :data-source="addForm.answer" :columns="answerColumns" :pagination="false" :locale="{ emptyText: '暂无选项' }">
 
             <template #bodyCell="{ column, record }">
               <template v-if="column.dataIndex === 'isTrue'">
@@ -285,7 +287,7 @@ const addFormRules = reactive({
 const addForm = reactive({
   questionType: 1,
   questionLevel: 1,
-  bankId: "",
+  bankId: undefined,
   questionContent: '',
   images: [],
   analysis: '',
@@ -389,9 +391,6 @@ const handleDelete = () => {
         content: '此操作将永久删除该题目, 是否继续？',
         okText: '确认',
         okType: 'danger',
-        okButtonProps: {
-            disabled: true,
-        },
         cancelText: '取消',
         onOk() {
             request("GET", API.teacher.deleteQuestion, { 'questionIds': state.selectedRowKeys.join(',') }).then((res: Res<string>) => {

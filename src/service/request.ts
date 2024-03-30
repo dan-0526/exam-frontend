@@ -9,7 +9,7 @@ const getToken = () => {
 // 创建新的axios实例
 const service = axios.create({
     // 环境变量，需要在.env文件中配置
-    baseURL: window.EXAM_CONFIG.BASEURL,
+    baseURL: window.EXAM_CONFIG?.BASEURL,
     // baseURL: process.env.NODE_ENV === "development" ? window.EXAM_CONFIG.BASEURL : window.EXAM_CONFIG.BASEURL,
     // 超时时间暂定5s
     timeout: 5000,

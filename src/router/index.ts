@@ -70,12 +70,12 @@ const routes: Array<RouteRecordRaw> = [
             {
                 path: '/examPaper',
                 name: '考试试卷',
-                component: () => import('../views/PaperManagement/UserList.vue'),
+                component: () => import('../views/ExamManagement/ExamPaper.vue'),
             },
             {
                 path: '/marking',
                 name: '阅卷管理',
-                component: () => import('../views/ExamTask/MyTask.vue'),
+                component: () => import('../views/ExamManagement/Marking.vue'),
             },
             {
                 path: '/examRecords',
@@ -91,7 +91,7 @@ const routes: Array<RouteRecordRaw> = [
             {
                 path: '/examList',
                 name: '考试列表',
-                component: () => import('../views/PaperManagement/UserList.vue'),
+                component: () => import('../views/ExamTask/MyTask.vue'),
             },
             {
                 path: '/myGrade',
@@ -118,7 +118,7 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/examStatistics',
         name: '考试统计',
-        component: () => import('../views/ExamRecords/index.vue'),
+        component: () => import('../views/Dashboard/index.vue'),
     },
     {
         path: '/onlineExam/:id',

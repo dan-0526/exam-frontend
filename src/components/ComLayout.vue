@@ -12,7 +12,7 @@
     <a-layout has-sider :style="{ display: 'flex', height: '100vh', flexDirection: 'column' }">
       <a-layout-header class="header">
         <div class="system-name">考试管理系统</div>
-        <div class="user">用户名</div>
+        <div class="user">{{ curUserInfo.username  }}</div>
       </a-layout-header>
 
       <a-layout-content class="content">
@@ -22,10 +22,12 @@
   </a-layout>
 </template>
 <script lang="ts" setup>
-import { h, onMounted, reactive, watch } from 'vue';
+import { h, onMounted, reactive, ref, watch } from 'vue';
 import { UserOutlined, TeamOutlined, HomeOutlined, TableOutlined, SolutionOutlined, ReadOutlined, ProfileOutlined, SettingOutlined, FileTextOutlined, ScheduleOutlined, FileSearchOutlined, FileDoneOutlined, FundOutlined, UnorderedListOutlined, SlidersOutlined, BookOutlined } from '@ant-design/icons-vue/lib';
 import { MenuProps } from 'ant-design-vue';
 import { useRouter } from 'vue-router'
+import API from '../api/api';
+import request from '../service/request';
 
 const router = useRouter()
 const state = reactive({
@@ -164,6 +166,12 @@ const items = reactive([
   },
 
 ]);
+const curUserInfo = ref({
+  username: '',
+  roleId: '',
+  realName: '',
+  nickName: ''
+})
 watch(
   () => state.openKeys,
   (_val, oldVal) => {
@@ -173,11 +181,21 @@ watch(
 const getMenu = () => {
   
 };
+const getUserInfo = async () => {
+  try {
+    const res = await request("GET", API.common.checkToken);
+    curUserInfo.value = res.data
+    localStorage.setItem('username', res.data.username)
+  } catch(err) {
+    console.log(err);
+  }
+}
 onMounted(() => {
   getMenu();
+  getUserInfo();
 })
 const handleMenu: MenuProps['onClick'] = e => {
-  console.log(e.key);
+  console.log("handleMenu_____", e);
   router.push({ path: `/${e.key}` })
 };
 </script>
