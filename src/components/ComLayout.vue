@@ -1,18 +1,46 @@
 <template>
   <a-layout class="layout" id="components-layout-demo-top-side-2" has-sider>
     <a-layout-sider class="sider">
-      <div style="height: 52px;font-size: 24px; line-height: 52px;background-color: #91AFED;">
+      <div
+        style="height: 52px;font-size: 28px; line-height: 52px;text-shadow:2px 2px #91AFED;background-color: #fff;color: #658FE7; font-weight: 800">
         考试管理系统
       </div>
       <a-menu v-model:selectedKeys="state.selectedKeys" v-model:openKeys="state.openKeys" mode="inline" :items="items"
-        @click="handleMenu" :style="{ height: 'calc(100vh - 52px)', borderRight: 0, display: 'flex', flexDirection: 'column', textAlign: 'left' }">
+        @click="handleMenu"
+        :style="{ height: 'calc(100vh - 52px)', borderRight: 0, display: 'flex', flexDirection: 'column', textAlign: 'left', paddingTop: '16px' }">
       </a-menu>
     </a-layout-sider>
 
     <a-layout has-sider :style="{ display: 'flex', height: '100vh', flexDirection: 'column' }">
       <a-layout-header class="header">
-        <div class="system-name">考试管理系统</div>
-        <div class="user">{{ curUserInfo.username  }}</div>
+        <div class="breadcrumb">
+          <a-breadcrumb>
+            <a-breadcrumb-item v-for="(item, index) in state.breadcrumb" :key="index">
+              {{ item }}
+            </a-breadcrumb-item>
+          </a-breadcrumb>
+        </div>
+        <div class="user">
+
+          <a-dropdown>
+            <a-button :icon="h(RedditOutlined)" size="large" type="ghost">
+              {{ curUserInfo.username }}
+              <DownOutlined />
+            </a-button>
+            <template #overlay>
+              <a-menu @click="handleUser">
+                <a-menu-item key="setting">
+                  <UserOutlined />
+                  个人资料
+                </a-menu-item>
+                <a-menu-item key="logout">
+                  <LogoutOutlined />
+                  退出登陆
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+        </div>
       </a-layout-header>
 
       <a-layout-content class="content">
@@ -23,18 +51,23 @@
 </template>
 <script lang="ts" setup>
 import { h, onMounted, reactive, ref, watch } from 'vue';
-import { UserOutlined, TeamOutlined, HomeOutlined, TableOutlined, SolutionOutlined, ReadOutlined, ProfileOutlined, SettingOutlined, FileTextOutlined, ScheduleOutlined, FileSearchOutlined, FileDoneOutlined, FundOutlined, UnorderedListOutlined, SlidersOutlined, BookOutlined } from '@ant-design/icons-vue/lib';
-import { MenuProps } from 'ant-design-vue';
+import { UserOutlined, TeamOutlined, HomeOutlined, TableOutlined, LogoutOutlined, RedditOutlined, DownOutlined, SolutionOutlined, ReadOutlined, ProfileOutlined, SettingOutlined, FileTextOutlined, ScheduleOutlined, FileSearchOutlined, FileDoneOutlined, FundOutlined, UnorderedListOutlined, SlidersOutlined, BookOutlined } from '@ant-design/icons-vue/lib';
+import { MenuProps, message } from 'ant-design-vue';
 import { useRouter } from 'vue-router'
 import API from '../api/api';
 import request from '../service/request';
+import { useRoute } from 'vue-router';
+import { useStore } from 'vuex';
 
+const store = useStore();
+const route = useRoute();
 const router = useRouter()
 const state = reactive({
   collapsed: false,
   selectedKeys: ['home'],
-  openKeys: ['personalManagement'],
-  preOpenKeys: ['personalManagement'],
+  openKeys: [],
+  preOpenKeys: [],
+  breadcrumb: ["主页"]
 });
 
 const iconMap = {
@@ -178,15 +211,24 @@ watch(
     state.preOpenKeys = oldVal;
   },
 );
+watch(() => route.path, (_newVal, _oldVal) => {
+  console.log("app.vue——————", route, _newVal, _oldVal);
+  if (route.path === '/') {
+    state.selectedKeys = ['home'];
+  } else {
+    state.selectedKeys = [route.path.slice(1)];
+  }
+
+})
 const getMenu = () => {
-  
+
 };
 const getUserInfo = async () => {
   try {
     const res = await request("GET", API.common.checkToken);
     curUserInfo.value = res.data
     localStorage.setItem('username', res.data.username)
-  } catch(err) {
+  } catch (err) {
     console.log(err);
   }
 }
@@ -196,7 +238,34 @@ onMounted(() => {
 })
 const handleMenu: MenuProps['onClick'] = e => {
   console.log("handleMenu_____", e);
-  router.push({ path: `/${e.key}` })
+  router.push({ path: `/${e.key}` });
+  const pathList = e.keyPath ?? [];
+  if (pathList.length === 1) {
+    state.breadcrumb = [(e.item.title ?? "") as string]
+  } else {
+    const firstMenu = items.find((i) => i.key === pathList[0]);
+    if (firstMenu) {
+      state.breadcrumb = [firstMenu.title, (e.item.title ?? "") as string]
+    }
+  }
+};
+const handleUser: MenuProps['onClick'] = e => {
+  console.log('click', e);
+  if (e.key === 'logout') {
+    logout();
+  }
+};
+const logout = async () => {
+  localStorage.removeItem('username')
+  localStorage.removeItem("authorization")
+  store.commit('SET_TOKEN', "");
+  const res = await request("GET", API.common.logout);
+  if (res.code === 200) {
+    message.success('注销成功');
+    await router.push({ path: '/login' });
+  } else {
+    message.error('服务器异常，注销失败');
+  }
 };
 </script>
 <style>
@@ -205,21 +274,29 @@ const handleMenu: MenuProps['onClick'] = e => {
   /* background-color: #FFF; */
 
 }
+
 .layout .header {
-    display: flex;
-    justify-content: space-between;
-    background-color: #658FE7;
-  }
+  display: flex;
+  justify-content: space-between;
+  background-color: #fff;
+  box-shadow: 5px 5px 10px -4px #BDCFF4;
+  height: 52px;
+  z-index: 2;
+}
 
-  .layout  .sider {}
+.breadcrumb .ant-breadcrumb {
+  line-height: 52px;
+}
 
-  .layout  .sider .ant-menu .ant-menu-item .ant-menu-item-icon {
-    font-size: 16px;
-  }
+.layout .sider {}
 
-  .layout  .content {
-    height: calc(100vh - 52px);
-    width: 100% !important;
-    overflow-y: overlay;
-  }
+.layout .sider .ant-menu .ant-menu-item .ant-menu-item-icon {
+  font-size: 16px;
+}
+
+.layout .content {
+  height: calc(100vh - 52px);
+  width: 100% !important;
+  overflow-y: overlay;
+}
 </style>

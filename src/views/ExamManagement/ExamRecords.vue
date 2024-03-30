@@ -17,16 +17,13 @@
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'status'">
           <a-tag :color="record.totalScore === null ? 'yellow' : 'green'">
-              {{ record.totalScore === null ? '未批阅' : '已批阅' }}
+              {{ record.totalScore === null ? '未批阅' : '已完成' }}
             </a-tag>
         </template>
         <template v-else-if="column.key === 'totalScore'">
           <span>
               {{ record.totalScore === null ? '-' : record.totalScore }}
           </span>
-        </template>
-        <template v-else-if="column.key === 'id'">
-          <a-button type="link" @click="handleDetail(record)" :disabled="record.totalScore !== null">去批阅</a-button>
         </template>
       </template>
     </a-table>
@@ -43,7 +40,6 @@ import API from '../../api/api'
 import { TableProps } from 'ant-design-vue';
 import { usePagination } from 'vue-request';
 import { SearchOutlined } from '@ant-design/icons-vue';
-import router from '../../router';
 
 type APIParams = {
   examId?: string,
@@ -65,45 +61,39 @@ const columns = [
     title: '考试名称',
     dataIndex: 'examName',
     key: 'examName',
-    width: 180,
+    width: "20%",
     ellipsis: true,
   },
   {
     title: '考试时间',
     dataIndex: ' examTime',
     key: 'examTime',
-    width: 220,
+    width: 250,
   },
   {
     title: '考生',
     dataIndex: ' realname',
     key: 'realname',
-    width: 180,
     ellipsis: true,
   },
   {
     title: '客观题得分',
     dataIndex: 'logicScore',
     key: 'logicScore',
+    width: 120,
   },
   {
     title: '状态',
     dataIndex: 'status',
     key: 'status',
-    width: 120,
+    width: 150
   },
   {
     title: '总分',
     dataIndex: 'totalScore',
     key: 'totalScore',
     width: 120,
-  },
-  {
-    title: '操作',
-    dataIndex: 'id',
-    key: 'id',
-    width: 120,
-  },
+  }
 ]
 
 const state = reactive({
@@ -180,11 +170,6 @@ const handleTableChange: TableProps['onChange'] = (
 const onSelectChange = (val: never[]) => {
   console.log(val);
   state.selectedRowKeys = val
-}
-
-const handleDetail = (record: any) => {
-  console.log(record)
-  router.push('/updatePaPer')
 }
 
 const getExamList = async () => {

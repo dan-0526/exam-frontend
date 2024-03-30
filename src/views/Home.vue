@@ -1,7 +1,7 @@
 <template>
     <div class="home">
         <h1 class="title">
-            <a href="#" target="_blank">在线考试系统</a>
+            <a href="#" target="_blank" >在线考试系统</a>
         </h1>
     <a-typography style="text-align: left;">
         <a-typography-title>系统描述</a-typography-title>
@@ -77,6 +77,7 @@ export default defineComponent({
 
 .title a {
     text-decoration: none;
+    color: #658FE7;
 }
 div.ant-typography {
     text-indent: 2em;

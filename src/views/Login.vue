@@ -116,7 +116,7 @@ const onFinish = (values: FormState) => {
   axios.post(API.common.login, data).then(async (resp: { data: Res<string>; }) => {
     if (resp.data.code === 200) {
       localStorage.setItem('authorization', resp.data.data)
-      message.warning('登陆成功^_^');
+      message.success('登陆成功^_^');
       store.commit('SET_TOKEN', resp.data.data);
       if (window.EXAM_CONFIG !== undefined) {
         window.EXAM_CONFIG.TOKEN = resp.data.data

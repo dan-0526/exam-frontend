@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import store from '../store';
 
-const routes: Array<RouteRecordRaw> = [
+export const routeList: Array<RouteRecordRaw> = [
     {
         path: '/',
         name: '登陆',
@@ -80,7 +80,7 @@ const routes: Array<RouteRecordRaw> = [
             {
                 path: '/examRecords',
                 name: '考试记录',
-                component: () => import('../views/ExamRecords/index.vue'),
+                component: () => import('../views/ExamManagement/ExamRecords.vue'),
             }
         ],
     },
@@ -91,27 +91,27 @@ const routes: Array<RouteRecordRaw> = [
             {
                 path: '/examList',
                 name: '考试列表',
-                component: () => import('../views/ExamTask/MyTask.vue'),
+                component: () => import('../views/ExamTask/TaskList.vue'),
             },
             {
                 path: '/myGrade',
                 name: '我的成绩',
-                component: () => import('../views/ExamTask/MyTask.vue'),
+                component: () => import('../views/ExamTask/MyGrade.vue'),
             },
             {
                 path: '/examTraining',
                 name: '题库训练',
-                component: () => import('../views/ExamTask/MyTask.vue'),
+                component: () => import('../views/ExamTask/MyGrade.vue'),
             },
             {
                 path: '/examResult',
                 name: '考试结果',
-                component: () => import('../views/ExamRecords/index.vue'),
+                component: () => import('../views/ExamManagement/ExamRecords.vue'),
             },
             {
                 path: '/train/:bankId/:trainType',
                 name: '训练详情',
-                component: () => import('../views/ExamTask/MyTask.vue')
+                component: () => import('../views/ExamTask/MyGrade.vue')
             }
         ],
     },
@@ -134,7 +134,7 @@ const routes: Array<RouteRecordRaw> = [
 
 const router = createRouter({
     history: createWebHistory(''),
-    routes,
+    routes: routeList,
 });
 // 添加全局前置守卫
 router.beforeEach((to, from, next) => {
