@@ -123,7 +123,9 @@ const validatorUsername = (_: any, value: any) => {
     } else {
       return Promise.reject(new Error('用户名已存在'));
     }
-  });
+  }).catch(() => {
+    return Promise.reject(new Error('用户名已存在'));
+  })
 }
 const roleStatusArr = ["未知", "学生", "老师", "超级管理员"]
 const layout = {
@@ -362,6 +364,8 @@ const addUser = () => {
       message.error(resp.message)
     }
     addVisible.value = false
+  }).catch(() => {
+    message.error('添加失败')
   })
 }
 const handleOk = () => {
