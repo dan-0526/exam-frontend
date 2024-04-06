@@ -11,7 +11,7 @@
           <a-button :icon="h(SearchOutlined)" @click="getList" type="primary" />
         </a-space>
       </a-row>
-      <a-table :row-selection="{ selectedRowKeys: state.selectedRowKeys, onChange: onSelectChange }" :columns="columns"
+      <a-table :columns="columns"
         :row-key="(record: any) => record.recordId" :data-source="dataSource" :pagination="pagination"
         @change="handleTableChange" :loading="loading">
         <template #bodyCell="{ column, record }">
@@ -74,8 +74,8 @@
     },
     {
       title: '考生',
-      dataIndex: ' realname',
-      key: 'realname',
+      dataIndex: 'username',
+      key: 'username',
       width: 180,
       ellipsis: true,
     },
@@ -110,9 +110,6 @@
       pageNo: 1,
       pageSize: 10,
     },
-    data: [],
-    total: 0,
-    selectedRowKeys: [],
     examOptions: [] as ExamOptiontype[]
   });
   
@@ -136,6 +133,7 @@
   const {
     data,
     run,
+    total,
     loading,
     current,
     pageSize,
@@ -146,11 +144,11 @@
     },
   });
   
-  const dataSource = computed(() => data?.value?.data || []);
+  const dataSource = computed(() => data?.value?.data.data || []);
   
   const pagination = computed(() => ({
     showTotal: (total: any) => `共${total}条数据`,
-    total: (data as unknown as [])?.length,
+    total: total,
     showSizeChanger: true,
     current: current.value,
     pageSize: pageSize.value,
@@ -175,10 +173,6 @@
       ...filters,
     });
   };
-  const onSelectChange = (val: never[]) => {
-    console.log(val);
-    state.selectedRowKeys = val
-  }
   
   const handleDetail = (record: any) => {
     console.log(record)

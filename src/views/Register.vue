@@ -118,34 +118,34 @@ const changeCode = () => {
     }
 };
 //表单信息提交
-const onFinish = (values: FormState) => {
+const onFinish = async (values: FormState) => {
     console.log(values);
     const { code, ...other } = values;
     //发送登录请求
-    axios.post(API.common.register, other).then(async (resp: { data: Res<string> }) => {
-        console.log(resp);
-        if (resp.data.code === 200) {
-            localStorage.setItem('authorization', resp.data.data);
-            message.warning('注册成功^_^');
-            store.commit('SET_TOKEN', resp.data.data);
+    try {
+        const res: {data: Res<string>} = await axios.post(API.common.register, other);
+        if (res.data.code === 200) {
+            localStorage.setItem('authorization', res.data.data);
+            message.success('注册成功^_^');
+            store.commit('SET_TOKEN', res.data.data);
             if (window.EXAM_CONFIG !== undefined) {
-                window.EXAM_CONFIG.TOKEN = resp.data.data;
+                window.EXAM_CONFIG.TOKEN = res.data.data;
             }
             await router.push('/home');
         } else {
             //请求出错
             changeCode();
             getCode();
-            message.warning(resp.data.message);
+            message.warning(res.data.message);
         }
-    }).catch(() => {
+    } catch (error) {
         message.warning('请求出错');
-    });
+    }
 };
 const onFinishFailed = (error: any) => {
     console.log('Failed:', error);
     if (error.errorFields.length > 0) {
-        error.errorFields.forEach((item: { errors: string[]}) => {
+        error.errorFields.forEach((item: { errors: string[] }) => {
             message.warning(item.errors[0]);
         });
         return;
@@ -161,18 +161,20 @@ const onFinishFailed = (error: any) => {
 .register {}
 
 .register-box {}
+
 .register-header {
-  background-color: #FDD585;
-  height: 56;
-  color: #513804;
-  opacity: 0.8;
-  font-size: 24px;
-  line-height: 56px;
-  padding: 0 18px;
-  display: flex;
-  justify-content: center;
-  border-radius: 18px 18px 0 0;
+    background-color: #FDD585;
+    height: 56;
+    color: #513804;
+    opacity: 0.8;
+    font-size: 24px;
+    line-height: 56px;
+    padding: 0 18px;
+    display: flex;
+    justify-content: center;
+    border-radius: 18px 18px 0 0;
 }
+
 .register-button {
     width: 100%;
     border-left: transparent;
@@ -180,8 +182,8 @@ const onFinishFailed = (error: any) => {
     margin-top: 24px;
     color: #fff;
 }
+
 .register-form-items {
     margin: 5% 20%;
 }
-
 </style>

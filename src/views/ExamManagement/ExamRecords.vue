@@ -1,7 +1,7 @@
 <template>
   <div class="exam-records">
 
-    <a-row style="margin-top: 16px;">
+    <a-row style="margin: 16px 0;">
       <a-space>
         <a-select v-model:value="state.queryInfo.examId" placeholder="请选择考试" style="width: 200px; text-align: left;" allowClear>
           <a-select-option v-for="(item, index) in state.examOptions" :key="index" :value="parseInt(item.examId)">
@@ -11,7 +11,7 @@
         <a-button :icon="h(SearchOutlined)" @click="getList" type="primary" />
       </a-space>
     </a-row>
-    <a-table :row-selection="{ selectedRowKeys: state.selectedRowKeys, onChange: onSelectChange }" :columns="columns"
+    <a-table :columns="columns"
       :row-key="(record: any) => record.recordId" :data-source="dataSource" :pagination="pagination"
       @change="handleTableChange" :loading="loading">
       <template #bodyCell="{ column, record }">
@@ -120,9 +120,6 @@ const state = reactive({
     pageNo: 1,
     pageSize: 10,
   },
-  data: [] as any[],
-  total: 0,
-  selectedRowKeys: [],
   examOptions: [] as ExamOptiontype[]
 });
 
@@ -131,8 +128,6 @@ const getList = async () => {
   try {
     const res = await run(state.queryInfo) as unknown as Res<{data: any[];total: number}>;
     console.log(res);
-    state.data = res.data?.data;
-    state.total = res.data?.total;
   } catch (error) {
     console.log(error);
   }
@@ -194,10 +189,6 @@ const handleTableChange: TableProps['onChange'] = (
     ...filters,
   });
 };
-const onSelectChange = (val: never[]) => {
-  console.log(val);
-  state.selectedRowKeys = val
-}
 
 const getExamList = async () => {
   try {

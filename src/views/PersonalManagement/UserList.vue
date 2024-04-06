@@ -3,30 +3,31 @@
 
     <a-row style="margin-top: 16px;">
       <a-space>
-      <a-input v-model="state.queryInfo.loginName" placeholder="搜索用户名" ></a-input>
-      <a-input v-model="state.queryInfo.realname" placeholder="搜索姓名"></a-input>
-      <a-button :icon="h(SearchOutlined)" @click="getList" type="primary" />
-    </a-space>
+        <a-input v-model="state.queryInfo.loginName" placeholder="搜索用户名"></a-input>
+        <a-input v-model="state.queryInfo.realname" placeholder="搜索姓名"></a-input>
+        <a-button :icon="h(SearchOutlined)" @click="getList" type="primary" />
+      </a-space>
     </a-row>
     <a-row style="margin: 16px 0;">
       <a-space>
-      <a-button type="primary" @click="showAddDialog">
-        添加
-      </a-button>
-      <a-button @click="handleChange('on')" :disabled="state.selectedRowKeys.length === 0">
-        启用
-      </a-button>
-      <a-button @click="handleChange('off')" :disabled="state.selectedRowKeys.length === 0">
-        禁用
-      </a-button>
-      <a-button @click="handleChange('delete')" :disabled="state.selectedRowKeys.length === 0">
-        删除
-      </a-button>
-    </a-space>
+        <a-button type="primary" @click="showAddDialog">
+          添加
+        </a-button>
+        <a-button @click="handleChange('on')" :disabled="state.selectedRowKeys.length === 0">
+          启用
+        </a-button>
+        <a-button @click="handleChange('off')" :disabled="state.selectedRowKeys.length === 0">
+          禁用
+        </a-button>
+        <a-button @click="handleChange('delete')" :disabled="state.selectedRowKeys.length === 0">
+          删除
+        </a-button>
+      </a-space>
     </a-row>
 
     <a-table :row-selection="{ selectedRowKeys: state.selectedRowKeys, onChange: onSelectChange }" :columns="columns"
-      :row-key="(record: any) => record.id" :data-source="dataSource" :pagination="pagination" @change="handleTableChange" :loading="loading">
+      :row-key="(record: any) => record.id" :data-source="dataSource" :pagination="pagination"
+      @change="handleTableChange" :loading="loading">
       <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'roleId'">
           <span>{{ roleStatusArr[record.roleId] }}</span>
@@ -45,16 +46,11 @@
         </template>
       </template>
     </a-table>
-    <a-modal title="添加用户" v-model:open="addVisible" width="45%" @cancel="resetAddForm" @ok="handleOk" cancelText="取消" okText="确定">
+    <a-modal title="添加用户" v-model:open="addVisible" width="45%" @cancel="resetAddForm" @ok="handleOk" cancelText="取消"
+      okText="确定">
 
-      <a-form 
-        :model="addForm" 
-        :rules="addFormRules" 
-        ref="addFormRef" 
-        @finish="addUser" 
-        @finishFailed="addUserFailed" 
-        v-bind="layout"
-      >
+      <a-form :model="addForm" :rules="addFormRules" ref="addFormRef" @finish="addUser" @finishFailed="addUserFailed"
+        v-bind="layout">
 
         <a-form-item label="用户名" label-width="120px" prop="username">
           <a-input v-model:value="addForm.username"></a-input>
@@ -99,22 +95,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, toRaw, h } from 'vue';
+import { ref, reactive, computed, toRaw, h, createVNode } from 'vue';
 import request from '../../service/request';
 import API from '../../api/api'
-import { TableProps, message } from 'ant-design-vue';
+import { Modal, TableProps, message } from 'ant-design-vue';
 import { usePagination } from 'vue-request';
 import { Res } from '../../api/type';
-import { SearchOutlined } from '@ant-design/icons-vue';
+import { ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons-vue';
 type APIParams = {
-    loginName?: string,
-    realname?: string,
-    pageNo?: number,
-    pageSize?: number,
-    [key: string]: any;
+  loginName?: string,
+  realname?: string,
+  pageNo?: number,
+  pageSize?: number,
+  [key: string]: any;
 };
 const validatorUsername = (_: any, value: any) => {
-  if(value.length === 0) {
+  if (value.length === 0) {
     return Promise.resolve();
   }
   return request("GET", `${API.common.checkUsername}/${value}`).then((resp) => {
@@ -133,67 +129,67 @@ const layout = {
   wrapperCol: { span: 16 },
 }
 const columns = [
-    {
-        title: '用户名',
-        dataIndex: 'username',
-        key: 'username',
-        width: 140,
-        ellipsis: true,
-    },
-    {
-        title: '姓名',
-        dataIndex: 'realname',
-        key: 'realname',
-        width: 130,
-        ellipsis: true,
-    },
-    {
-        title: '角色',
-        dataIndex: 'roleId',
-        key: 'roleId',
-        width: 120,
-    },
-    {
-        title: '昵称',
-        dataIndex: 'nickname',
-        key: 'nickname',
-        ellipsis: true,
-    },
-    {
-        title: '学号/教编号',
-        dataIndex: 'code',
-        key: 'code',
-        width: 120,
-    },
-    {
-        title: '性别',
-        dataIndex: 'sex',
-        key: 'sex',
-        width: 80,
-    },
-    {
-        title: '手机号',
-        dataIndex: 'phone',
-        key: 'phone',
-        ellipsis: true,
-    },
-    {
-        title: '身份证号',
-        dataIndex: 'idCard',
-        key: 'idCard',
-        ellipsis: true,
-    },
-    {
-        title: '创建时间',
-        dataIndex: 'createDate',
-        key: 'createDate',
-        width: 180,
-    },
-    {
-        title: '状态',
-        dataIndex: 'status',
-        key: 'status',
-    },
+  {
+    title: '用户名',
+    dataIndex: 'username',
+    key: 'username',
+    width: 140,
+    ellipsis: true,
+  },
+  {
+    title: '姓名',
+    dataIndex: 'realname',
+    key: 'realname',
+    width: 130,
+    ellipsis: true,
+  },
+  {
+    title: '角色',
+    dataIndex: 'roleId',
+    key: 'roleId',
+    width: 120,
+  },
+  {
+    title: '昵称',
+    dataIndex: 'nickname',
+    key: 'nickname',
+    ellipsis: true,
+  },
+  {
+    title: '学号/教编号',
+    dataIndex: 'code',
+    key: 'code',
+    width: 120,
+  },
+  {
+    title: '性别',
+    dataIndex: 'sex',
+    key: 'sex',
+    width: 80,
+  },
+  {
+    title: '手机号',
+    dataIndex: 'phone',
+    key: 'phone',
+    ellipsis: true,
+  },
+  {
+    title: '身份证号',
+    dataIndex: 'idCard',
+    key: 'idCard',
+    ellipsis: true,
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'createDate',
+    key: 'createDate',
+    width: 180,
+  },
+  {
+    title: '状态',
+    dataIndex: 'status',
+    key: 'status',
+  },
 ]
 const state = reactive({
   queryInfo: {
@@ -268,7 +264,7 @@ const {
   current,
   pageSize,
 } = usePagination(queryData, {
-    pagination: {
+  pagination: {
     currentKey: 'pageNo',
     pageSizeKey: 'pageSize',
   },
@@ -282,11 +278,11 @@ const pagination = computed(() => ({
   current: current.value,
   pageSize: pageSize.value,
   pageSizeOptions: [
-		'10',
-		'20',
-		'30',
-		'50',
-	],
+    '10',
+    '20',
+    '30',
+    '50',
+  ],
 }));
 const handleTableChange: TableProps['onChange'] = (
   pag,
@@ -307,43 +303,36 @@ const onSelectChange = (val: never[]) => {
   state.selectedRowKeys = val
 }
 //功能下拉框被选择
-const handleChange = (val: string) => {
+const handleChange = (val: "on" | "off" | "delete") => {
   //清空上一次的操作
-
-  if (val === 'on') {//状态设置为正常
-    request("GET", API.admin.handleUser + '/' + 1, { 'userIds': state.selectedRowKeys.join(',') }).then((resp: Res<string>) => {
-      if (resp.code === 200) {
-        //删除成功后,回调更新用户数据
-        getList()
-        message.success('启用成功')
-        state.selectedRowKeys = [];
-      } else {
-        message.error('操作失败')
-      }
-    })
-  } else if (val === 'off') {//禁用用户
-    request("GET", API.admin.handleUser + '/' + 2, { 'userIds': state.selectedRowKeys.join(',') }).then((resp: Res<string>) => {
-      if (resp.code === 200) {
-        getList()
-        message.success('禁用成功')
-        state.selectedRowKeys = [];
-
-      } else {
-        message.error('禁用失败')
-      }
-    })
-  } else if (val === 'delete') {//删除用户
-    request("GET", API.admin.handleUser + '/' + 3, { 'userIds': state.selectedRowKeys.join(',') }).then((resp: Res<string>) => {
-      if (resp.code === 200) {
-        //删除成功后,回调更新用户数据
-        getList()
-        message.success('删除成功');
-        state.selectedRowKeys = [];
-      } else {
-        message.error('删除失败')
-      }
-    })
+  const oprations = {
+    on: { title: '启用', index: 1 },
+    off: { title: '禁用', index: 2 },
+    delete: { title: '删除', index: 3 },
   }
+  //清空上一次的操作
+  Modal.confirm({
+    title: oprations[val].title + '用户',
+    icon: createVNode(ExclamationCircleOutlined),
+    content: `确认批量${oprations[val].title}用户吗？`,
+    okText: '确认',
+    okType: 'danger',
+    cancelText: '取消',
+    onOk() {
+      request("GET", API.admin.handleUser + '/' + oprations[val].index, { 'userIds': state.selectedRowKeys.join(',') }).then((resp: Res<string>) => {
+        if (resp.code === 200) {
+          getList()
+          message.success(oprations[val].title + '成功')
+          state.selectedRowKeys = [];
+        } else {
+          message.error(oprations[val].title + '失败')
+        }
+      })
+    },
+    onCancel() {
+
+    },
+  });
 }
 
 //点击添加按钮

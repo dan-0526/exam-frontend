@@ -35,6 +35,9 @@
         <template v-if="column.key === 'time'">
           <span>{{ record.startTime !== null ? record.startTime + ' - ' + record.endTime : '-' }}</span>
         </template>
+        <template v-else-if="column.key === 'duration'">
+          <span>{{ record.duration }}分钟</span>
+        </template>
         <template v-else-if="column.key === 'type'">
           <span>{{ record.type === 1 ? '公开考试' : '需要密码' }}</span>
         </template>
@@ -106,32 +109,41 @@ const columns = [
     dataIndex: 'type',
     key: 'type',
     width: 120,
+    align: "center"
   },
   {
     title: '考试时间',
-    dataIndex: ' time',
+    dataIndex: 'time',
     key: 'time',
-    width: 240,
+    width: 220,
+  },
+  {
+    title: '考试时长',
+    dataIndex: 'duration',
+    key: 'duration',
+    width: 150,
+    align: 'center',
   },
   {
     title: '试卷总分',
     dataIndex: 'totalScore',
     key: 'totalScore',
-    ellipsis: true,
     width: 120,
+    align: 'center',
   },
   {
     title: '及格分数',
     dataIndex: 'passScore',
     key: 'passScore',
     width: 120,
-    ellipsis: true,
+    align: 'center',
   },
   {
     title: '状态',
     dataIndex: 'status',
     key: 'status',
-    width: 160,
+    width: 108,
+    align: 'center',
   },
   {
     title: '操作',

@@ -19,6 +19,7 @@ let API = {
     getCurrentUser:  baseUrl + '/common/getCurrentUser',
     //更新当前用户的信息
     updateCurrentUser:  baseUrl + '/common/updateCurrentUser',
+    updateCurrentUserPassword:  baseUrl + '/common/updateCurrentUserPassword',
   },
   //应用表
   admin: {

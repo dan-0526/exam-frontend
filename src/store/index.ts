@@ -7,6 +7,15 @@ export default createStore({
             username: null,
             roleId: null,
             password: null
+        },
+        personalData: {
+            username: '',
+            realname: '',
+            code: '',
+            sex: 1,
+            phone: '',
+            idCard: '',
+            nickname: '',
         }
     },
     mutations: {
@@ -16,6 +25,9 @@ export default createStore({
         SET_USERINFO(state, userInfo) {
             state.userInfo = userInfo;
         },
+        SET_PERSONALDATA(state, personalData) {
+            state.personalData = personalData;
+        }
     },
     actions: {
         setToken({ commit }, token) {
@@ -23,6 +35,9 @@ export default createStore({
         },
         setUserInfo({ commit }, userInfo) {
             commit('SET_USERINFO', userInfo);
+        },
+        setPersonalData({ commit }, personalData) {
+            commit('SET_PERSONALDATA', personalData);
         },
     },
     getters: {
@@ -32,5 +47,8 @@ export default createStore({
         getUserInfo(state) {
             return state.userInfo;
         },
+        getPersonalData(state) {
+            return state.personalData;
+        }
     },
 });
