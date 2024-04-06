@@ -18,12 +18,17 @@
       </a-space>
     </a-row>
     <a-row style="margin: 16px 0;">
-      <a-space>
+      <a-space v-if="props.readonly !== true">
         <a-button type="primary" @click="showAddDialog">
           添加
         </a-button>
         <a-button @click="handleDelete" :disabled="state.selectedRowKeys.length === 0">
                     删除
+                </a-button>
+      </a-space>
+      <a-space v-if="props.readonly === true">
+        <a-button @click="handleSelected" :disabled="state.selectedRowKeys.length === 0">
+                    确认选择{{ state.selectedRowKeys.length }}项
                 </a-button>
       </a-space>
     </a-row>
@@ -65,7 +70,7 @@
         </a-form-item>
 
         <a-form-item label="所属科目" prop="bankId">
-          <a-select v-model:value="addForm.bankId" placeholder="请选择题目类型" mode="multiple">
+          <a-select v-model:value="addForm.bankId" placeholder="请选择所属科目" mode="multiple">
             <a-select-option v-for="(item) in subjectList" :key="item.bankId" :value="item.bankId">
               {{ item.bankName }}
             </a-select-option>
@@ -139,6 +144,7 @@ type AnswerType = {
   images: [];
   analysis: string;
 }
+
 const questionTypeArr = ["未知", "单选题", "多选题", "判断题", "简答题"];
 const levelArr = ["未知", "简单", "中等", "困难"]
 //题目类型
@@ -240,7 +246,23 @@ function getBase64(img: Blob, callback: (base64Url: string) => void) {
   reader.addEventListener('load', () => callback(reader.result as string));
   reader.readAsDataURL(img);
 }
+const props = defineProps({
+    // 表格配置项
+    readonly: {
+        type: Boolean,
+        default: false,
+        required: false
+    },
+    onSelect: {
+        type: Function,
+        default: (_ids: string[]) => { },
+    },
+});
+const emit = defineEmits(['selected']);
 
+const handleSelected = () => {
+    emit('selected', state.selectData);
+};
 const state = reactive({
   queryInfo: {
     questionType: '',
@@ -251,7 +273,8 @@ const state = reactive({
   },
   data: [],
   total: 0,
-  selectedRowKeys: []
+  selectedRowKeys: [],
+  selectData: []
 });
 
 const addFormRules = reactive({
@@ -272,7 +295,7 @@ const addFormRules = reactive({
   bankId: [
     {
       required: true,
-      message: '请选择题库',
+      message: '请选择所属科目',
       trigger: 'blur'
     }
   ],
@@ -298,6 +321,7 @@ const addForm = reactive({
 const addFormRef = ref();
 const addVisible = ref(false);
 const subjectList = ref<{ bankId: string, bankName: string }[]>([]);
+const allSubjectList = ref<{ bankId: string, bankName: string }[]>([]);
 const previewImgVisible = ref(false);
 const previewImgUrl = ref('');
 
@@ -369,9 +393,10 @@ const handleTableChange: TableProps['onChange'] = (
     ...filters,
   });
 };
-const onSelectChange = (val: never[]) => {
-  console.log(val);
-  state.selectedRowKeys = val
+const onSelectChange = (val: never[], selectedRows: never[]) => {
+  console.log(val,  selectedRows);
+  state.selectedRowKeys = val,
+  state.selectData = selectedRows
 }
 
 const getSubjects = () => {
@@ -379,6 +404,22 @@ const getSubjects = () => {
     if (res.code === 200) {
       subjectList.value = res.data
     }
+  }).catch(() => {
+    console.log('获取题库失败');
+  })
+}
+const getAllSubjects = () => {
+  const defaultParams = {
+        bankName: '',
+        pageNo: 1,
+        pageSize: 9999,
+    }
+  request("GET", API.teacher.getBankHaveQuestionSumByType, defaultParams).then((res: Res<any>) => {
+    if (res.code === 200) {
+      allSubjectList.value = res.data.map((i: { questionBank: any; }) => i.questionBank);
+    }
+  }).catch((err) => {
+    console.log(err);
   })
 }
 onMounted(() => {
@@ -402,6 +443,8 @@ const handleDelete = () => {
                 } else {
                     message.error(res.message)
                 }
+            }).catch((err) => {
+                console.log(err);
             })
         },
         onCancel() {
@@ -411,7 +454,8 @@ const handleDelete = () => {
 }
 //点击添加按钮
 const showAddDialog = () => {
-  addVisible.value = true
+  addVisible.value = true;
+  getAllSubjects()
 }
 const handleAddAnswer = () => {
   addForm.answer.push({
