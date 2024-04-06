@@ -12,7 +12,7 @@
         </a-space>
       </a-row>
       <a-table :row-selection="{ selectedRowKeys: state.selectedRowKeys, onChange: onSelectChange }" :columns="columns"
-        :row-key="(record: any) => record.id" :data-source="dataSource" :pagination="pagination"
+        :row-key="(record: any) => record.recordId" :data-source="dataSource" :pagination="pagination"
         @change="handleTableChange" :loading="loading">
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'status'">
@@ -30,8 +30,6 @@
           </template>
         </template>
       </a-table>
-  
-  
     </div>
   
   </template>
@@ -70,7 +68,7 @@
     },
     {
       title: '考试时间',
-      dataIndex: ' examTime',
+      dataIndex: 'examTime',
       key: 'examTime',
       width: 220,
     },

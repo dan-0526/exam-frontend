@@ -50,6 +50,9 @@ const getRoleInfo = () => {
             message.error('获取信息失败');
             loading.value = false;
         }
+    }).catch((_err) => {
+        message.error('获取信息失败');
+        loading.value = false;
     })
 }
 onMounted(() => {

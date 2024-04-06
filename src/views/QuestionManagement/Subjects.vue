@@ -3,7 +3,7 @@
 
         <a-row>
             <a-col span="6">
-                <a-input-search v-model="state.queryInfo.bankName" @search="getList" placeholder="搜索题库名" maxlength="50" allowClear></a-input-search>
+                <a-input-search v-model="state.queryInfo.bankName" @search="getList" placeholder="搜索题库名" maxlength="50" enter-button allowClear></a-input-search>
 
             </a-col>
         </a-row>
@@ -19,7 +19,7 @@
         </a-row>
 
         <a-table :row-selection="{ selectedRowKeys: state.selectedRowKeys, onChange: onSelectChange }"
-            :columns="columns" :row-key="(record: any) => record.id" :data-source="dataSource" :pagination="pagination"
+            :columns="columns" :row-key="(record: any) => record.questionBank.bankId" :data-source="dataSource" :pagination="pagination"
             @change="handleTableChange" :loading="loading">
             <template #bodyCell="{ column, record }">
         <template v-if="column.key === 'questionBank'">
@@ -182,9 +182,6 @@ const handleDelete = () => {
         content: '此操作将永久删除该题库, 是否继续？',
         okText: '确认',
         okType: 'danger',
-        okButtonProps: {
-            disabled: true,
-        },
         cancelText: '取消',
         onOk() {
             request("GET", API.teacher.deleteQuestionBank, { 'ids': state.selectedRowKeys.join(',') }).then((res: Res<string>) => {
@@ -218,6 +215,8 @@ const addSubject = () => {
             message.error(resp.message)
         }
         addVisible.value = false
+    }).catch(() => {
+        message.error('添加失败')
     })
 }
 const handleOk = () => {
