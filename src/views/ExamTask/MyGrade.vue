@@ -1,5 +1,219 @@
 <template>
-    <div class="my-task">
-      <h1>This is an myTask page</h1>
-    </div>
-  </template>
+  <div class="my-grade">
+
+    <a-row style="margin-top: 16px;margin-bottom: 16px;">
+      <a-space>
+        <a-select v-model:value="state.queryInfo.examId" placeholder="请选择考试" style="width: 200px; text-align: left;" allowClear>
+          <a-select-option v-for="(item, index) in state.examOptions" :key="index" :value="parseInt(item.examId)">
+            {{ item.examName }}
+          </a-select-option>
+        </a-select>
+        <a-button :icon="h(SearchOutlined)" @click="getList" type="primary" />
+      </a-space>
+    </a-row>
+    <a-table :row-selection="{ selectedRowKeys: state.selectedRowKeys, onChange: onSelectChange }" :columns="columns"
+      :row-key="(record: any) => record.id" :data-source="dataSource" :pagination="pagination"
+      @change="handleTableChange" :loading="loading">
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'passStatus'">
+          <a-tag :color="passScoreArr[record.passStatus + 1].color">
+              {{ passScoreArr[record.passStatus + 1].title}}
+            </a-tag>
+        </template>
+        <template v-else-if="column.key === 'totalScore'">
+          <span>
+              {{ record.totalScore === null ? '-' : record.totalScore }}
+          </span>
+        </template>
+      </template>
+    </a-table>
+  </div>
+
+</template>
+
+<script setup lang="ts">
+import { reactive, computed, h, onMounted } from 'vue';
+import request from '../../service/request';
+import API from '../../api/api'
+import { TableProps } from 'ant-design-vue';
+import { usePagination } from 'vue-request';
+import { SearchOutlined } from '@ant-design/icons-vue';
+
+type APIParams = {
+  examId?: string,
+  pageNo?: number,
+  pageSize?: number,
+  [key: string]: any;
+};
+type ExamOptiontype = {
+  examId: string,
+  examName: string,
+  passScore: number,
+}
+
+const columns = [
+  {
+    title: '考试名称',
+    dataIndex: 'examName',
+    key: 'examName',
+    ellipsis: true,
+  },
+  {
+    title: '考试时间',
+    dataIndex: 'examTime',
+    key: 'examTime',
+    width: 250,
+  },
+  {
+    title: '客观题得分',
+    dataIndex: 'logicScore',
+    key: 'logicScore',
+    width: 120,
+  },
+  {
+    title: '总得分',
+    dataIndex: 'totalScore',
+    key: 'totalScore',
+    width: 120,
+  },
+  {
+    title: '状态',
+    dataIndex: 'passStatus',
+    key: 'passStatus',
+    width: 140
+  },
+  // {
+  //   title: '操作',
+  //   dataIndex: 'operation',
+  //   key: 'operation',
+  //   width: 140,
+  // }
+]
+const passScoreArr = [
+  {
+    color: "gray",
+    title: "未知"
+  },
+  {
+    color: "yellow",
+    title: "待批阅"
+  },
+  {
+    color: "red",
+    title: "不及格"
+  },
+  {
+    color: "green",
+    title: "及格"
+  }
+]
+const state = reactive({
+  queryInfo: {
+    examId: '',
+    pageNo: 1,
+    pageSize: 10,
+  },
+  data: [],
+  total: 0,
+  selectedRowKeys: [],
+  examOptions: [] as ExamOptiontype[]
+});
+
+
+const getList = async () => {
+  try {
+    const res = await run(state.queryInfo);
+    console.log(res);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const queryData = (params: APIParams) => {
+  const queryParams = {
+    pageNo: params.pageNo ?? 1,
+    pageSize: params.pageSize ?? 10,
+    username: localStorage.getItem('username')
+  }
+  return request("GET", API.student.getMyGrade, queryParams);
+};
+const {
+  data,
+  run,
+  loading,
+  current,
+  pageSize,
+} = usePagination(queryData, {
+  pagination: {
+    currentKey: 'pageNo',
+    pageSizeKey: 'pageSize',
+  },
+});
+
+const dataSource = computed(() => data?.value?.data || []);
+
+const pagination = computed(() => ({
+  showTotal: (total: any) => `共${total}条数据`,
+  total: (data as unknown as [])?.length,
+  showSizeChanger: true,
+  current: current.value,
+  pageSize: pageSize.value,
+  pageSizeOptions: [
+    '10',
+    '20',
+    '30',
+    '50',
+  ],
+}));
+const handleTableChange: TableProps['onChange'] = (
+  pag,
+  filters: any,
+) => {
+  state.queryInfo = {
+    ...state.queryInfo,
+    ...pag,
+  };
+  run({
+    pageNo: pag.current,
+    pageSize: pag.pageSize,
+    ...filters,
+  });
+};
+const onSelectChange = (val: never[]) => {
+  console.log(val);
+  state.selectedRowKeys = val
+}
+
+const getExamList = async () => {
+  try {
+    const res = await request("GET", API.teacher.allExamInfo, {});
+    console.log(res);
+    state.examOptions = res.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+onMounted(() => {
+  getExamList();
+})
+</script>
+
+
+<style>
+.my-grade {
+  animation: leftMoveIn .7s ease-in;
+  padding: 16px 24px;
+}
+
+@keyframes leftMoveIn {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+}
+</style>
