@@ -22,15 +22,15 @@ export const routeList: Array<RouteRecordRaw> = [
         name: '主页',
         component: () => import('../views/Home.vue'),
     },
-    {
-        path: '/user',
-        name: '用户信息',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
-        component: () =>
-            import(/* webpackChunkName: "about" */ '../views/UserProfile/index.vue')
-    },
+    // {
+    //     path: '/user',
+    //     name: '用户信息',
+    //     // route level code-splitting
+    //     // this generates a separate chunk (about.[hash].js) for this route
+    //     // which is lazy-loaded when the route is visited.
+    //     component: () =>
+    //         import(/* webpackChunkName: "about" */ '../views/UserProfile/index.vue')
+    // },
     {
         path: '/personalManagement',
         name: '人员管理',
@@ -125,11 +125,11 @@ export const routeList: Array<RouteRecordRaw> = [
         name: '在线考试',
         component: () => import('../views/OnlineExam/index.vue'),
     },
-    {
-        path: '/setting',
-        name: '设置',
-        component: () => import('../views/Setting/index.vue'),
-    },
+    // {
+    //     path: '/setting',
+    //     name: '设置',
+    //     component: () => import('../views/Setting/index.vue'),
+    // },
 ];
 
 const router = createRouter({

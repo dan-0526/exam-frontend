@@ -52,20 +52,12 @@
       </a-layout-content>
     </a-layout>
   </a-layout>
-  <a-modal title="重置密码" v-model:open="psdVisible" width="45%" @cancel="cancelResetPsd" @ok="handleOk"
-            cancelText="取消" okText="确定">
-
-            <a-form :model="psdForm" :rules="psdFormRules" ref="psdFormRef" @finish="resetPsd"
-                @finishFailed="resetPsdFailed" v-bind="layout">
-                <a-form-item label="新密码" label-width="120px" prop="password">
-                    <a-input v-model:value="psdForm.password"></a-input>
-                </a-form-item>
-                <a-form-item label="确认密码" label-width="120px" prop="confirmPassword">
-                    <a-input v-model:value="psdForm.confirmPassword"></a-input>
-                </a-form-item>
-            </a-form>
-        </a-modal>
-        <Setting :visible="settingVisible" @back="handleBack" />
+  <div v-if="settingVisible === true">
+    <Setting :visible="settingVisible" @back="handleBack" />
+  </div>
+  <div v-if="psdVisible === true">
+    <PasswordReset :visible="psdVisible" @back="handlePsdBack" />
+  </div>
 </template>
 <script lang="ts" setup>
 import { h, onMounted, reactive, ref, watch } from 'vue';
@@ -77,6 +69,7 @@ import request from '../service/request';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 import Setting from '../views/UserProfile/Setting.vue';
+import PasswordReset from '../views/UserProfile/PasswordReset.vue';
 
 const store = useStore();
 const route = useRoute();
@@ -88,6 +81,8 @@ const state = reactive({
   preOpenKeys: [],
   breadcrumb: ["主页"]
 });
+const psdVisible = ref(false)
+const settingVisible = ref(false)
 
 const iconMap = {
   home: HomeOutlined,
@@ -247,8 +242,7 @@ const getUserInfo = async () => {
     const res = await request("GET", API.common.checkToken);
     if (res.code !== 200) {
       message.error(res.message);
-      localStorage.removeItem('username')
-      localStorage.removeItem("authorization")
+      localStorage.clear()
       store.commit('SET_TOKEN', "");
       await router.push({ path: '/login' });
       return;
@@ -260,9 +254,25 @@ const getUserInfo = async () => {
     console.log(err);
   }
 }
+const getPersonalData = async () => {
+  try {
+    const res = await request("GET", API.common.getCurrentUser);
+    if (res.code !== 200) {
+      message.error(res.message);
+      localStorage.clear()
+      store.commit('SET_TOKEN', "");
+      await router.push({ path: '/login' });
+      return;
+    }
+    store.commit('SET_PERSONALDATA', res.data);
+  } catch (err) {
+    console.log(err);
+  }
+}
 onMounted(() => {
   getMenu();
   getUserInfo();
+  getPersonalData()
 })
 const handleMenu: MenuProps['onClick'] = e => {
   console.log("handleMenu_____", e);
@@ -288,9 +298,8 @@ const handleUser: MenuProps['onClick'] = e => {
   }
 };
 const logout = async () => {
-  localStorage.removeItem('username')
-  localStorage.removeItem("authorization")
-  store.commit('SET_TOKEN', "");
+  store.commit('SET_TOKEN', null);
+  localStorage.clear();
   try {
     const res = await request("GET", API.common.logout);
     if (res.code === 200) {
@@ -304,64 +313,14 @@ const logout = async () => {
   }
 
 };
-const psdForm = reactive({
-    password: '',
-    confirmPassword: ''
-})
-const psdVisible = ref(false)
-const psdFormRef = ref()
-const layout = {
-  labelCol: { span: 6 },
-  wrapperCol: { span: 16 },
-}
-const validatePass2 = (_rule: any, value: string, callback: any) => {
-    if (value === '') {
-        callback(new Error('请再次输入密码'));
-    } else if (value !== psdForm.password) {
-        callback(new Error('两次输入密码不一致!'));
-    } else {
-        callback();
-    }
-}
-const psdFormRules = reactive({
-    password: [
-        { required: true, message: '请输入新密码', trigger: 'blur' }
-    ],
-    confirmPassword: [
-        { required: true, message: '请再次输入密码', trigger: 'blur' },
-        { validator: validatePass2, trigger: 'blur' }
-    ]
-})
 
-const resetPsd = () => {
-    // request("POST", API.teacher.addQuestionBank, addForm).then((resp: Res<any[]>) => {
-    //     if (resp.code === 200) {
-    //         message.success(resp.message)
-    //     } else {
-    //         message.error(resp.message)
-    //     }
-    //     addVisible.value = false
-    // }).catch(() => {
-    //     message.error('添加失败')
-    // })
-}
-const handleOk = () => {
-    console.log('addForm', psdForm);
-    psdFormRef.value.validate().then(resetPsd).catch(resetPsdFailed)
-}
-const resetPsdFailed = (error: any) => {
-    console.log('Failed:', error);
-    message.warning('请检查您所填写的信息是否有误');
-}
-//表单信息重置
-const cancelResetPsd = () => {
-    psdFormRef.value.resetFields();
-    psdVisible.value = false
-}
-const settingVisible = ref(false)
 const handleBack = (newVisible: boolean) => {
   console.log('handleBack', newVisible);
   settingVisible.value = newVisible
+}
+const handlePsdBack = (newVisible: boolean) => {
+  console.log('handleBack', newVisible);
+  psdVisible.value = newVisible
 }
 </script>
 <style>

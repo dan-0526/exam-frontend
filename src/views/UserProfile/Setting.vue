@@ -1,5 +1,6 @@
 <template>
-  <a-modal title="修改个人信息" v-model:open="props.visible" width="60%" :footer="null" class="settings">
+  <a-modal title="修改个人信息" v-model:open="props.visible" width="60%" class="settings" @cancel="handleBack" @ok="handleOk" cancelText="取消"
+    okText="确定" :destroyOnClose="true">
     <a-form :model="settingForm" :rules="settingFormRules" ref="settingFormRef" @finish="onFinish"
       @finishFailed="onFinishFailed" v-bind="layout">
       <a-form-item label="用户名" prop="username">
@@ -14,8 +15,8 @@
       </a-form-item>
       <a-form-item label="性别" label-width="120px" prop="sex">
         <a-radio-group v-model:value="settingForm.sex">
-          <a-radio value="2">男</a-radio>
-          <a-radio value="1">女</a-radio>
+          <a-radio :value="2">男</a-radio>
+          <a-radio :value="1">女</a-radio>
         </a-radio-group>
       </a-form-item>
       <a-form-item label="学号/教编号" label-width="120px" prop="code">
@@ -26,12 +27,6 @@
       </a-form-item>
       <a-form-item label="身份证号" label-width="120px" prop="idCard">
         <a-input v-model:value="settingForm.idCard"></a-input>
-      </a-form-item>
-      <a-form-item :wrapper-col="{ span: 24 }" style="text-align: center">
-        <a-space>
-          <a-button @click="handleBack" size="large">取消</a-button>
-          <a-button type="primary" html-type="submit" size="large">提交</a-button>
-        </a-space>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -45,7 +40,21 @@ import {
 } from 'vue';
 import { message } from 'ant-design-vue';
 import { defineEmits } from 'vue';
+import API from '../../api/api';
+import request from '../../service/request';
+import { Res } from '../../api/type';
+import { pick } from 'lodash';
+import store from '../../store';
 
+interface UserType {
+  username: string;
+  realname: string;
+  code: string;
+  sex: 1;
+  phone: string;
+  idCard: string;
+  nickname: string;
+}
 const props = defineProps({
   visible: {
     type: Boolean,
@@ -64,29 +73,59 @@ const settingFormRules = reactive({
   phone: [{ length: 11, message: '手机号必须11位', trigger: 'blur' }],
   idCard: [{ length: 18, message: '身份证号必须18位', trigger: 'blur' }],
 })
-const settingForm = reactive({
-  username: 'yelan',
-  realname: '夜兰',
+const USER_PROPERTIES = ["username", "realname", "code", "sex", "phone", "idCard", "nickname"]
+const personalData = store.state.personalData
+
+const settingForm = reactive<UserType>({
+  username: '',
+  realname: '',
   code: '',
-  sex: '',
+  sex: 1,
   phone: '',
   idCard: '',
   nickname: '',
 });
 const settingFormRef = ref();
 
+const getUserInfo = () => {
+  Object.assign(settingForm, pick(personalData, USER_PROPERTIES));
+  console.log(personalData);
+}
+getUserInfo()
 const emit = defineEmits(['back']);
 
 const handleBack = () => {
-  console.log(111)
   emit('back', false);
+  settingFormRef.value.resetFields();
 };
 
-
+const handleOk = () => {
+  settingFormRef.value.validate().then(onFinish).catch(onFinishFailed)
+}
 
 //表单信息提交
 const onFinish = (values: any) => {
   console.log(values);
+  const userInfo = {
+      ...values,
+      sex: Number(values.sex),
+  };
+  request("POST", API.common.updateCurrentUser, userInfo).then((resp: Res<string>) => {
+      if (resp.code === 200) {
+          message.success(resp.message)
+          // const newData = {
+          //     ...personalData,
+          //     ...userInfo,
+          // }
+          // store.commit('SET_PERSONALDATA', newData);
+
+      } else {
+          message.error(resp.message)
+      }
+      handleBack();
+  }).catch((err) => {
+      message.error(err)
+  })
 };
 const onFinishFailed = (error: any) => {
   console.log('Failed:', error);
@@ -102,7 +141,7 @@ const onFinishFailed = (error: any) => {
 
 
 onMounted(() => {
-  // getPage()
+  
 });
 defineExpose({});
 </script>
