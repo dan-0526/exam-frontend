@@ -12,12 +12,12 @@
       </a-space>
     </a-row>
     <a-table :row-selection="{ selectedRowKeys: state.selectedRowKeys, onChange: onSelectChange }" :columns="columns"
-      :row-key="(record: any) => record.id" :data-source="dataSource" :pagination="pagination"
+      :row-key="(record: any) => record.recordId" :data-source="dataSource" :pagination="pagination"
       @change="handleTableChange" :loading="loading">
       <template #bodyCell="{ column, record }">
-        <template v-if="column.key === 'status'">
-          <a-tag :color="record.totalScore === null ? 'yellow' : 'green'">
-              {{ record.totalScore === null ? '未批阅' : '已完成' }}
+        <template v-if="column.key === 'passStatus'">
+          <a-tag :color="passScoreArr[record.passStatus + 1].color">
+              {{ passScoreArr[record.passStatus + 1].title}}
             </a-tag>
         </template>
         <template v-else-if="column.key === 'totalScore'">
@@ -40,6 +40,7 @@ import API from '../../api/api'
 import { TableProps } from 'ant-design-vue';
 import { usePagination } from 'vue-request';
 import { SearchOutlined } from '@ant-design/icons-vue';
+import { Res } from '../../api/type';
 
 type APIParams = {
   examId?: string,
@@ -51,11 +52,28 @@ type ExamOptiontype = {
   examId: string,
   examName: string,
 }
-
 // const layout = {
 //   labelCol: { span: 6 },
 //   wrapperCol: { span: 16 },
 // }
+const passScoreArr = [
+  {
+    color: "gray",
+    title: "未知"
+  },
+  {
+    color: "yellow",
+    title: "待批阅"
+  },
+  {
+    color: "red",
+    title: "不及格"
+  },
+  {
+    color: "green",
+    title: "及格"
+  }
+]
 const columns = [
   {
     title: '考试名称',
@@ -66,14 +84,14 @@ const columns = [
   },
   {
     title: '考试时间',
-    dataIndex: ' examTime',
+    dataIndex: 'examTime',
     key: 'examTime',
     width: 250,
   },
   {
     title: '考生',
-    dataIndex: ' realname',
-    key: 'realname',
+    dataIndex: 'username',
+    key: 'username',
     ellipsis: true,
   },
   {
@@ -84,8 +102,8 @@ const columns = [
   },
   {
     title: '状态',
-    dataIndex: 'status',
-    key: 'status',
+    dataIndex: 'passStatus',
+    key: 'passStatus',
     width: 150
   },
   {
@@ -102,7 +120,7 @@ const state = reactive({
     pageNo: 1,
     pageSize: 10,
   },
-  data: [],
+  data: [] as any[],
   total: 0,
   selectedRowKeys: [],
   examOptions: [] as ExamOptiontype[]
@@ -111,8 +129,10 @@ const state = reactive({
 
 const getList = async () => {
   try {
-    const res = await run(state.queryInfo);
+    const res = await run(state.queryInfo) as unknown as Res<{data: any[];total: number}>;
     console.log(res);
+    state.data = res.data?.data;
+    state.total = res.data?.total;
   } catch (error) {
     console.log(error);
   }
@@ -128,21 +148,28 @@ const queryData = (params: APIParams) => {
 const {
   data,
   run,
+  total,
   loading,
   current,
   pageSize,
+  ...other
 } = usePagination(queryData, {
   pagination: {
     currentKey: 'pageNo',
     pageSizeKey: 'pageSize',
   },
 });
-
-const dataSource = computed(() => data?.value?.data || []);
+console.log(data,
+  run,
+  total,
+  loading,
+  current,
+  pageSize, other)
+const dataSource = computed(() => data?.value?.data.data || []);
 
 const pagination = computed(() => ({
   showTotal: (total: any) => `共${total}条数据`,
-  total: (data as unknown as [])?.length,
+  total: total,
   showSizeChanger: true,
   current: current.value,
   pageSize: pageSize.value,
