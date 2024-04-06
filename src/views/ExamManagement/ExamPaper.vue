@@ -1,5 +1,5 @@
 <template>
-  <div class="exam-paper">
+  <div class="exam-paper" v-show="curType === 'exam'">
 
     <a-row style="margin-top: 16px;">
       <a-space>
@@ -29,13 +29,10 @@
     </a-space>
     </a-row>
     <a-table :row-selection="{ selectedRowKeys: state.selectedRowKeys, onChange: onSelectChange }" :columns="columns"
-      :row-key="(record: any) => record.id" :data-source="dataSource" :pagination="pagination"
+      :row-key="(record: any) => record.examId" :data-source="dataSource" :pagination="pagination"
       @change="handleTableChange" :loading="loading">
       <template #bodyCell="{ column, record }">
-        <template v-if="column.key === 'examName'">
-          <a-button type="link" @click="handleDetail(record)">{{ record.examName  }}</a-button>
-        </template>
-        <template v-else-if="column.key === 'time'">
+        <template v-if="column.key === 'time'">
           <span>{{ record.startTime !== null ? record.startTime + ' - ' + record.endTime : '-' }}</span>
         </template>
         <template v-else-if="column.key === 'type'">
@@ -48,23 +45,28 @@
             </a-tag>
           </span>
         </template>
+        <template v-else-if="column.key === 'examId'">
+          <a-button type="link" @click="handleDetail(record)">编辑</a-button>
+        </template>
       </template>
     </a-table>
 
-
+  </div>
+  <div v-show="curType === 'update'">
+    <UpdatePaper :id="state.currentExam.id" @back="handleBack" />
   </div>
 
 </template>
 
 <script setup lang="ts">
-import { reactive, computed, h, createVNode } from 'vue';
+import { reactive, computed, h, createVNode, ref } from 'vue';
 import request from '../../service/request';
 import API from '../../api/api'
 import { Modal, TableProps, message } from 'ant-design-vue';
 import { usePagination } from 'vue-request';
 import { Res } from '../../api/type';
 import { ExclamationCircleOutlined, SearchOutlined } from '@ant-design/icons-vue';
-import router from '../../router';
+import UpdatePaper from './UpdatePaper.vue';
 
 type APIParams = {
   examType?: string,
@@ -129,7 +131,14 @@ const columns = [
     title: '状态',
     dataIndex: 'status',
     key: 'status',
-    width: 150,
+    width: 160,
+  },
+  {
+    title: '操作',
+    dataIndex: 'examId',
+    key: 'examId',
+    width: 120,
+    align: 'center',
   },
 ]
 
@@ -146,9 +155,10 @@ const state = reactive({
   },
   data: [],
   total: 0,
-  selectedRowKeys: []
+  selectedRowKeys: [],
+  currentExam: {} as {[key: string]: any},
 });
-
+const curType = ref("exam");
 const getList = async () => {
   try {
     const res = await run(state.queryInfo);
@@ -240,6 +250,8 @@ const handleChange = (val: "on" | "off" | "delete") => {
             } else {
               message.error(res.message)
             }
+          }).catch((err) => {
+            console.log(err)
           })
         },
         onCancel() {
@@ -249,11 +261,21 @@ const handleChange = (val: "on" | "off" | "delete") => {
 }
 //点击添加按钮
 const handleAdd = () => {
-  router.push('/addPaPer')
+  state.currentExam.id === null
+  curType.value = "update"
 }
 const handleDetail = (record: any) => {
   console.log(record)
-  router.push('/updatePaPer')
+  state.currentExam = record
+  curType.value = "update"
+}
+const handleBack = (type: "cancel" | "ok", _newVisible: boolean) => {
+  console.log(type)
+  curType.value = "exam"
+  if (type === "ok") {
+    getList()
+    message.success('更新成功')
+  }
 }
 </script>
 
