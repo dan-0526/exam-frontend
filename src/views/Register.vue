@@ -3,7 +3,7 @@
         <a-form :model="formState" name="basic" :label-col="{ span: 0 }" :wrapper-col="{ span: 24 }" :colon="false"
             autocomplete="off" class="login-box" @finish="onFinish" @finishFailed="onFinishFailed" :rules="formRules"
             ref="formRef">
-            <a-row class="login-header"> 考试管理系统 </a-row>
+            <a-row class="register-header"> 考试管理系统 </a-row>
             <div class="login-form-items register-form-items">
                 <a-form-item label="" name="username" ref="name">
                     <a-input v-model:value="formState.username" size="large" placeholder="请输入登陆用户名">
@@ -14,13 +14,6 @@
                 </a-form-item>
                 <a-form-item label="" name="realname" ref="realname">
                     <a-input v-model:value="formState.realname" size="large" placeholder="请输入真实姓名">
-                        <template #prefix>
-                            <UserOutlined class="site-form-item-icon" />
-                        </template>
-                    </a-input>
-                </a-form-item>
-                <a-form-item label="" name="nickname" ref="nickname">
-                    <a-input v-model:value="formState.nickname" size="large" placeholder="请输入昵称">
                         <template #prefix>
                             <UserOutlined class="site-form-item-icon" />
                         </template>
@@ -95,11 +88,7 @@ const formRules = reactive({
         { min: 4, max: 32, message: '名称长度需 4 到 32 个字符', trigger: 'blur' },
     ],
     realname: [
-        { required: true, message: '请输入昵称!' },
-        { min: 2, max: 24, message: '长度需 2 到 24 个字符', trigger: 'blur' },
-    ],
-    nickname: [
-        { required: false},
+        { required: true, message: '请输入姓名!' },
         { min: 2, max: 24, message: '长度需 2 到 24 个字符', trigger: 'blur' },
     ],
     password: [
@@ -134,6 +123,7 @@ const onFinish = (values: FormState) => {
     const { code, ...other } = values;
     //发送登录请求
     axios.post(API.common.register, other).then(async (resp: { data: Res<string> }) => {
+        console.log(resp);
         if (resp.data.code === 200) {
             localStorage.setItem('authorization', resp.data.data);
             message.warning('注册成功^_^');
@@ -148,6 +138,8 @@ const onFinish = (values: FormState) => {
             getCode();
             message.warning(resp.data.message);
         }
+    }).catch(() => {
+        message.warning('请求出错');
     });
 };
 const onFinishFailed = (error: any) => {
@@ -169,7 +161,18 @@ const onFinishFailed = (error: any) => {
 .register {}
 
 .register-box {}
-
+.register-header {
+  background-color: #FDD585;
+  height: 56;
+  color: #513804;
+  opacity: 0.8;
+  font-size: 24px;
+  line-height: 56px;
+  padding: 0 18px;
+  display: flex;
+  justify-content: center;
+  border-radius: 18px 18px 0 0;
+}
 .register-button {
     width: 100%;
     border-left: transparent;
