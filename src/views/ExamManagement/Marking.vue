@@ -1,5 +1,5 @@
 <template>
-    <div class="marking">
+    <div class="marking" v-if="recordId.length < 1">
   
       <a-row style="margin-bottom: 16px;">
         <a-space>
@@ -31,18 +31,19 @@
         </template>
       </a-table>
     </div>
-  
+    <MarkingDetail v-else :recordId="recordId" @back="handleBack" />
   </template>
   
   <script setup lang="ts">
-  import { reactive, computed, h, onMounted } from 'vue';
+  import { reactive, computed, h, onMounted, ref } from 'vue';
   import request from '../../service/request';
   import API from '../../api/api'
   import { TableProps } from 'ant-design-vue';
   import { usePagination } from 'vue-request';
   import { SearchOutlined } from '@ant-design/icons-vue';
-  import router from '../../router';
-  
+  // import router from '../../router';
+  import MarkingDetail from './MarkingDetail.vue';
+
   type APIParams = {
     examId?: string,
     pageNo?: number,
@@ -103,7 +104,7 @@
       width: 120,
     },
   ]
-  
+  const recordId = ref('')
   const state = reactive({
     queryInfo: {
       examId: '',
@@ -176,9 +177,15 @@
   
   const handleDetail = (record: any) => {
     console.log(record)
-    router.push('/updatePaPer')
+    recordId.value = record.recordId
   }
-  
+
+  const handleBack = (type: "cancel" | "ok", _newVisible: boolean) => {
+    recordId.value = ''
+    if (type === "ok") {
+      getList()
+    }
+  }
   const getExamList = async () => {
     try {
       const res = await request("GET", API.teacher.allExamInfo, {});

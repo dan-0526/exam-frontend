@@ -203,12 +203,12 @@ const items = reactive([
         title: '我的成绩',
         icon: () => h(iconMap.myGrade),
       },
-      {
-        key: 'examTraining',
-        icon: () => h(iconMap.examTraining),
-        label: '题库训练',
-        title: '题库训练',
-      },
+      // {
+      //   key: 'examTraining',
+      //   icon: () => h(iconMap.examTraining),
+      //   label: '题库训练',
+      //   title: '题库训练',
+      // },
     ],
   },
 

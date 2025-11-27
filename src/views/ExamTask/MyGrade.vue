@@ -11,7 +11,7 @@
         <a-button :icon="h(SearchOutlined)" @click="getList" type="primary" />
       </a-space>
     </a-row>
-    <a-table :row-selection="{ selectedRowKeys: state.selectedRowKeys, onChange: onSelectChange }" :columns="columns"
+    <a-table :columns="columns"
       :row-key="(record: any) => record.id" :data-source="dataSource" :pagination="pagination"
       @change="handleTableChange" :loading="loading">
       <template #bodyCell="{ column, record }">
@@ -113,8 +113,6 @@ const state = reactive({
     pageNo: 1,
     pageSize: 10,
   },
-  data: [],
-  total: 0,
   selectedRowKeys: [],
   examOptions: [] as ExamOptiontype[]
 });
@@ -179,10 +177,6 @@ const handleTableChange: TableProps['onChange'] = (
     ...filters,
   });
 };
-const onSelectChange = (val: never[]) => {
-  console.log(val);
-  state.selectedRowKeys = val
-}
 
 const getExamList = async () => {
   try {

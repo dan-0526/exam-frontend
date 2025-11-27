@@ -77,6 +77,11 @@ export const routeList: Array<RouteRecordRaw> = [
                 name: '阅卷管理',
                 component: () => import('../views/ExamManagement/Marking.vue'),
             },
+            // {
+            //     path: '/markingExam/:recorId',
+            //     name: '考试阅卷',
+            //     component: () => import('../views/ExamManagement/MarkingDetail.vue'),
+            // },
             {
                 path: '/examRecords',
                 name: '考试记录',

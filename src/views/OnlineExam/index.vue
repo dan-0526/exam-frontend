@@ -545,7 +545,8 @@ watchEffect(() => {
     request("POST", API.teacher.addExamRecord, data).then(resp => {
       if (resp.code === 200) {
         message.success('考试结束 *^▽^*');
-        router.push(`/examResult/${resp.data.data}`);
+        // router.push(`/examResult/${resp.data}`);
+        router.push("/myGrade")
       }
     });
   }
